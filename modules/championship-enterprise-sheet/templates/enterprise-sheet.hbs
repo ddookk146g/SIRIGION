@@ -1,0 +1,121 @@
+<form class="championship-enterprise-form flexcol">
+  <nav class="tabs sheet-tabs" data-group="primary-tabs">
+    <a class="item" data-tab="main">Основное</a>
+    <a class="item" data-tab="production">Производство</a>
+    <a class="item" data-tab="finance">Финансы</a>
+  </nav>
+
+  <section class="enterprise-body">
+    <div class="tab" data-group="primary-tabs" data-tab="main">
+      <div class="form-group">
+        <label>Код предприятия</label>
+        <input type="text" name="enterpriseCode" value="{{enterprise.enterpriseCode}}">
+      </div>
+
+      <div class="form-group">
+        <label>Название предприятия</label>
+        <input type="text" name="enterpriseName" value="{{enterprise.enterpriseName}}">
+      </div>
+
+      <div class="form-group">
+        <label>Тип предприятия</label>
+        <input type="text" name="enterpriseType" value="{{enterprise.enterpriseType}}">
+      </div>
+
+      <div class="form-group">
+        <label>Команда</label>
+        <select name="teamId">
+          <option value="">—</option>
+          {{#each teams}}
+            <option value="{{teamId}}" {{#if (eq ../enterprise.teamId teamId)}}selected{{/if}}>{{teamName}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Мощность</label>
+        <input type="number" name="power" value="{{enterprise.power}}">
+      </div>
+
+      <div class="form-group">
+        <label>Эффективность</label>
+        <input type="number" step="0.01" name="efficiency" value="{{enterprise.efficiency}}">
+      </div>
+    </div>
+
+    <div class="tab" data-group="primary-tabs" data-tab="production">
+      <h2>Потребление</h2>
+      <button type="button" data-action="add-input">Добавить строку</button>
+
+      {{#each enterprise.inputs}}
+      <div class="resource-row" data-row-collection="inputs">
+        <select name="inputs.{{@index}}.action">
+          {{#each ../sourceOptions}}
+            <option value="{{this}}" {{#if (eq this ../action)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+
+        <input type="text" name="inputs.{{@index}}.resource" value="{{resource}}" placeholder="Ресурс">
+        <input type="number" name="inputs.{{@index}}.quantity" value="{{quantity}}" placeholder="Кол-во">
+        <input type="number" name="inputs.{{@index}}.price" value="{{price}}" placeholder="Цена">
+        <input type="number" name="inputs.{{@index}}.logistics" value="{{logistics}}" placeholder="Логистика">
+
+        <button type="button" data-action="remove-row" data-collection="inputs" data-index="{{@index}}">X</button>
+      </div>
+      {{/each}}
+
+      <h2>Производство</h2>
+      <button type="button" data-action="add-output">Добавить строку</button>
+
+      {{#each enterprise.outputs}}
+      <div class="resource-row" data-row-collection="outputs">
+        <select name="outputs.{{@index}}.action">
+          {{#each ../outputActionOptions}}
+            <option value="{{this}}" {{#if (eq this ../action)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+
+        <input type="text" name="outputs.{{@index}}.resource" value="{{resource}}" placeholder="Ресурс">
+        <input type="number" name="outputs.{{@index}}.quantity" value="{{quantity}}" placeholder="Кол-во">
+        <input type="number" name="outputs.{{@index}}.price" value="{{price}}" placeholder="Цена">
+        <input type="number" name="outputs.{{@index}}.logistics" value="{{logistics}}" placeholder="Логистика">
+
+        <button type="button" data-action="remove-row" data-collection="outputs" data-index="{{@index}}">X</button>
+      </div>
+      {{/each}}
+    </div>
+
+    <div class="tab" data-group="primary-tabs" data-tab="finance">
+      <div class="form-group">
+        <label>Расходы на зарплаты</label>
+        <input type="number" name="salaryExpenses" value="{{enterprise.salaryExpenses}}">
+      </div>
+
+      <div class="form-group">
+        <label>Расходы на логистику</label>
+        <input type="number" name="logisticsExpenses" value="{{enterprise.logisticsExpenses}}">
+      </div>
+
+      <div class="form-group">
+        <label>Обслуживание</label>
+        <input type="number" name="maintenanceExpenses" value="{{enterprise.maintenanceExpenses}}">
+      </div>
+
+      <div class="summary-block">
+        <p><strong>Производство:</strong> {{calculated.production}}</p>
+        <p><strong>Общие расходы:</strong> {{calculated.expenses}}</p>
+        <p><strong>НДПИ:</strong> {{calculated.ndpi}}</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="sheet-footer flexrow">
+    <button type="button" data-action="link-company">
+      <i class="fas fa-link"></i> Связать с компанией
+    </button>
+
+    <button type="button" data-action="save-enterprise">
+      <i class="fas fa-save"></i> Сохранить
+    </button>
+  </footer>
+</form>
