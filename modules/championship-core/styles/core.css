@@ -1,0 +1,27 @@
+.championship-core table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.championship-core th,
+.championship-core td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  text-align: left;
+}
+
+.championship-core .toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.championship-core .status-open {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.championship-core .status-closed {
+  color: #ff5252;
+  font-weight: bold;
+}
