@@ -1,8 +1,8 @@
 {
   "id": "championship-core",
   "title": "Чемпионат — Ядро",
-  "description": "Базовое ядро модульной системы чемпионата «Альянс корпораций»: команды, ходы, связи журналов, права доступа и публичный API.",
-  "version": "1.2.1",
+  "description": "Ядро чемпионата для Foundry VTT V13. Команды, индивидуальные ходы команд, журналы компаний и компактная плавающая панель ведущего.",
+  "version": "1.4.0",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -13,15 +13,14 @@
     }
   ],
   "scripts": [
+    "scripts/main.js",
     "scripts/api.js",
-    "scripts/admin-panel.js",
-    "scripts/main.js"
+    "scripts/admin-panel.js"
   ],
   "styles": [
     "styles/core.css"
   ],
   "templates": [
     "templates/admin-panel.hbs"
-  ],
-  "socket": false
+  ]
 }
