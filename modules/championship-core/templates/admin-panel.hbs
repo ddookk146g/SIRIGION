@@ -9,41 +9,52 @@
     <a class="item" data-tab="overview"><i class="fas fa-gauge-high"></i> Обзор</a>
     <a class="item" data-tab="teams"><i class="fas fa-users"></i> Команды</a>
     <a class="item" data-tab="turns"><i class="fas fa-calendar-days"></i> Ходы</a>
-    <a class="item" data-tab="tools"><i class="fas fa-screwdriver-wrench"></i> Инструменты</a>
-    <a class="item" data-tab="system"><i class="fas fa-database"></i> Система</a>
   </nav>
 
   <div class="championship-core-tab-content">
     <section class="tab" data-group="primary" data-tab="overview">
       <div class="cc-grid cc-grid-3">
-        <article class="cc-card">
+        <article class="cc-card cc-summary-card">
           <h3>Текущий ход</h3>
           <div class="cc-metric">{{currentTurn}} / {{maxTurns}}</div>
           {{#if isTurnOpen}}
-            <p class="status-open">Ход открыт</p>
+            <p class="status-open"><i class="fas fa-lock-open"></i> Ход открыт</p>
           {{else}}
-            <p class="status-closed">Ход закрыт</p>
+            <p class="status-closed"><i class="fas fa-lock"></i> Ход закрыт</p>
           {{/if}}
         </article>
 
-        <article class="cc-card">
+        <article class="cc-card cc-summary-card">
           <h3>Команды</h3>
           <div class="cc-metric">{{teams.length}}</div>
-          <p>Команды, зарегистрированные в ядре.</p>
+          <p>Созданные команды чемпионата.</p>
         </article>
 
-        <article class="cc-card">
-          <h3>Статус ядра</h3>
-          <div class="cc-metric">OK</div>
-          <p>Settings и flags доступны.</p>
+        <article class="cc-card cc-summary-card">
+          <h3>Назначение ядра</h3>
+          <p>Помощник ведущего: команды, доступы, ходы и быстрые переходы к журналам.</p>
         </article>
       </div>
 
-      <div class="toolbar cc-toolbar">
-        <button type="button" data-action="refresh"><i class="fas fa-rotate"></i> Обновить список команд</button>
-        <button type="button" data-action="open-turn"><i class="fas fa-lock-open"></i> Открыть ход</button>
-        <button type="button" data-action="close-turn"><i class="fas fa-lock"></i> Закрыть ход</button>
-        <button type="button" data-action="next-turn"><i class="fas fa-forward-step"></i> Следующий ход</button>
+      <div class="cc-card">
+        <h3>Быстрые действия</h3>
+        <div class="toolbar cc-toolbar">
+          <button type="button" data-action="refresh"><i class="fas fa-rotate"></i> Обновить команды</button>
+          <button type="button" data-action="open-turn"><i class="fas fa-lock-open"></i> Открыть ход</button>
+          <button type="button" data-action="close-turn"><i class="fas fa-lock"></i> Закрыть ход</button>
+          <button type="button" data-action="next-turn"><i class="fas fa-forward-step"></i> Следующий ход</button>
+        </div>
+      </div>
+
+      <div class="cc-card">
+        <h3>Журналы компаний</h3>
+        <div class="cc-quick-journals">
+          {{#each teams}}
+          <button type="button" data-action="open-company" data-team-id="{{teamId}}" {{#unless companyJournalUuid}}disabled{{/unless}}>
+            <i class="fas fa-book"></i> {{teamName}}
+          </button>
+          {{/each}}
+        </div>
       </div>
     </section>
 
@@ -51,19 +62,21 @@
       <div class="cc-card">
         <h3>Создать команду</h3>
         <form data-form="create-team" class="cc-form cc-create-team-form">
-          <div class="form-group">
-            <label>Название команды</label>
-            <input type="text" name="teamName" placeholder="Например: Северный Альянс" />
-          </div>
+          <div class="cc-grid cc-grid-2">
+            <div class="form-group">
+              <label>Название команды</label>
+              <input type="text" name="teamName" placeholder="Например: Северный Альянс" />
+            </div>
 
-          <div class="form-group">
-            <label>Стартовый баланс</label>
-            <input type="number" name="currentBalance" value="400000" step="1" />
+            <div class="form-group">
+              <label>Стартовый баланс</label>
+              <input type="number" name="currentBalance" value="400000" step="1" />
+            </div>
           </div>
 
           <div class="form-group cc-user-picker">
             <label>Игроки команды</label>
-            <div class="cc-checkbox-list">
+            <div class="cc-checkbox-list cc-checkbox-grid">
               {{#each users}}
                 {{#unless isGM}}
                 <label class="cc-checkbox-row">
@@ -80,13 +93,16 @@
       </div>
 
       <div class="cc-card">
-        <h3>Список команд</h3>
+        <h3>Команды</h3>
         <div class="cc-team-list">
           {{#each teams}}
           <article class="cc-team-card" data-team-id="{{teamId}}">
-            <header>
-              <input type="text" name="teamName" value="{{teamName}}" />
-              <span class="cc-muted">{{teamId}}</span>
+            <header class="cc-team-header">
+              <div>
+                <label>Название команды</label>
+                <input type="text" name="teamName" value="{{teamName}}" />
+              </div>
+              <span class="cc-status-pill">{{statusLabel}}</span>
             </header>
 
             <div class="cc-grid cc-grid-4">
@@ -105,12 +121,12 @@
               </div>
 
               <div class="form-group">
-                <label>Очки доступны</label>
+                <label>Инв. очки доступны</label>
                 <input type="number" name="availableInvestmentPoints" value="{{availableInvestmentPoints}}" step="1" />
               </div>
 
               <div class="form-group">
-                <label>Очки всего</label>
+                <label>Инв. очки всего</label>
                 <input type="number" name="totalInvestmentPoints" value="{{totalInvestmentPoints}}" step="1" />
               </div>
             </div>
@@ -131,7 +147,7 @@
               </div>
 
               <div class="cc-linked-info">
-                <p><strong>Журнал компании:</strong> {{#if companyJournalUuid}}есть{{else}}нет{{/if}}</p>
+                <p><strong>Журнал компании:</strong> {{#if companyJournalUuid}}привязан{{else}}нет{{/if}}</p>
                 <p><strong>Предприятий:</strong> {{enterpriseCount}}</p>
                 <p><strong>Участков:</strong> {{plotCount}}</p>
                 <p><strong>Игроки:</strong> {{usersLabel}}</p>
@@ -140,10 +156,7 @@
 
             <footer class="cc-row-actions">
               <button type="button" data-action="save-team"><i class="fas fa-floppy-disk"></i> Сохранить</button>
-              <button type="button" data-action="open-company"><i class="fas fa-book"></i> Открыть журнал</button>
-              <button type="button" data-action="accept-turn"><i class="fas fa-check"></i> Принять ход</button>
-              <button type="button" data-action="reject-turn"><i class="fas fa-xmark"></i> Отклонить</button>
-              <button type="button" data-action="draft-turn"><i class="fas fa-pen"></i> В черновик</button>
+              <button type="button" data-action="open-company"><i class="fas fa-book"></i> Журнал</button>
               <button type="button" class="cc-danger" data-action="delete-team"><i class="fas fa-trash"></i> Удалить</button>
             </footer>
           </article>
@@ -154,7 +167,7 @@
 
     <section class="tab" data-group="primary" data-tab="turns">
       <div class="cc-card">
-        <h3>Настройки хода</h3>
+        <h3>Управление ходом</h3>
         <form data-form="turn-settings" class="cc-form">
           <div class="cc-grid cc-grid-3">
             <div class="form-group">
@@ -174,32 +187,12 @@
           </div>
 
           <div class="toolbar cc-toolbar">
-            <button type="button" data-action="save-turn-settings"><i class="fas fa-floppy-disk"></i> Сохранить настройки</button>
-            <button type="button" data-action="open-turn"><i class="fas fa-lock-open"></i> Открыть ход</button>
-            <button type="button" data-action="close-turn"><i class="fas fa-lock"></i> Закрыть ход</button>
-            <button type="button" data-action="next-turn"><i class="fas fa-forward-step"></i> Открыть следующий ход</button>
+            <button type="button" data-action="save-turn-settings"><i class="fas fa-floppy-disk"></i> Сохранить</button>
+            <button type="button" data-action="open-turn"><i class="fas fa-lock-open"></i> Открыть</button>
+            <button type="button" data-action="close-turn"><i class="fas fa-lock"></i> Закрыть</button>
+            <button type="button" data-action="next-turn"><i class="fas fa-forward-step"></i> Следующий ход</button>
           </div>
         </form>
-      </div>
-    </section>
-
-    <section class="tab" data-group="primary" data-tab="tools">
-      <div class="cc-card cc-placeholder">
-        <h3>Будущие инструменты администратора</h3>
-        <p>Эта вкладка зарезервирована под расширения: проверка ходов, налоги, рынок, национальные проекты, импорт/экспорт данных и служебные операции.</p>
-      </div>
-    </section>
-
-    <section class="tab" data-group="primary" data-tab="system">
-      <div class="cc-card">
-        <h3>Системная информация</h3>
-        <dl class="cc-system-list">
-          <dt>Модуль</dt><dd>championship-core</dd>
-          <dt>Статус хода</dt><dd>{{turnStatus}}</dd>
-          <dt>Хранение команд</dt><dd>game.settings: teamsIndex</dd>
-          <dt>Flags</dt><dd>flags.championshipCore</dd>
-          <dt>Публичный API</dt><dd>game.championshipCore.api</dd>
-        </dl>
       </div>
     </section>
   </div>
