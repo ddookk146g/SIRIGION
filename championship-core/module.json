@@ -1,0 +1,27 @@
+{
+  "id": "championship-core",
+  "title": "Чемпионат — Ядро",
+  "description": "Базовое ядро модульной системы чемпионата «Альянс корпораций»: команды, ходы, связи журналов, права доступа и публичный API.",
+  "version": "1.2.1",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "Alliance Championship"
+    }
+  ],
+  "scripts": [
+    "scripts/api.js",
+    "scripts/admin-panel.js",
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/core.css"
+  ],
+  "templates": [
+    "templates/admin-panel.hbs"
+  ],
+  "socket": false
+}
