@@ -1,54 +1,207 @@
-<section class="championship-core">
-  <div class="toolbar">
-    <button type="button" data-action="refresh">
-      <i class="fas fa-rotate"></i> Обновить
-    </button>
-
-    <button type="button" data-action="open-turn">
-      <i class="fas fa-lock-open"></i> Открыть ход
-    </button>
-
-    <button type="button" data-action="close-turn">
-      <i class="fas fa-lock"></i> Закрыть ход
-    </button>
-  </div>
-
-  <p>
-    Текущий ход: <strong>{{currentTurn}}</strong> / {{maxTurns}}
-    {{#if isTurnOpen}}
-      <span class="status-open">(ОТКРЫТ)</span>
-    {{else}}
-      <span class="status-closed">(ЗАКРЫТ)</span>
-    {{/if}}
-  </p>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Команда</th>
-        <th>Статус</th>
-        <th>Предприятия</th>
-        <th>Участки</th>
-        <th>Инвестиции</th>
-        <th>Действия</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {{#each teams}}
-      <tr>
-        <td>{{teamName}}</td>
-        <td>{{statusLabel}}</td>
-        <td>{{enterpriseCount}}</td>
-        <td>{{plotCount}}</td>
-        <td>{{availableInvestmentPoints}} / {{totalInvestmentPoints}}</td>
-        <td>
-          <button type="button" data-action="open-company" data-team-id="{{teamId}}">
-            <i class="fas fa-book"></i>
-          </button>
-        </td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
+{{#unless isGM}}
+<section class="championship-core championship-core-denied">
+  <h2>Доступ запрещён</h2>
+  <p>Панель ядра доступна только администратору мира.</p>
 </section>
+{{else}}
+<section class="championship-core championship-core-admin-window">
+  <nav class="championship-core-tabs tabs" data-group="primary">
+    <a class="item" data-tab="overview"><i class="fas fa-gauge-high"></i> Обзор</a>
+    <a class="item" data-tab="teams"><i class="fas fa-users"></i> Команды</a>
+    <a class="item" data-tab="turns"><i class="fas fa-calendar-days"></i> Ходы</a>
+    <a class="item" data-tab="tools"><i class="fas fa-screwdriver-wrench"></i> Инструменты</a>
+    <a class="item" data-tab="system"><i class="fas fa-database"></i> Система</a>
+  </nav>
+
+  <div class="championship-core-tab-content">
+    <section class="tab" data-group="primary" data-tab="overview">
+      <div class="cc-grid cc-grid-3">
+        <article class="cc-card">
+          <h3>Текущий ход</h3>
+          <div class="cc-metric">{{currentTurn}} / {{maxTurns}}</div>
+          {{#if isTurnOpen}}
+            <p class="status-open">Ход открыт</p>
+          {{else}}
+            <p class="status-closed">Ход закрыт</p>
+          {{/if}}
+        </article>
+
+        <article class="cc-card">
+          <h3>Команды</h3>
+          <div class="cc-metric">{{teams.length}}</div>
+          <p>Команды, зарегистрированные в ядре.</p>
+        </article>
+
+        <article class="cc-card">
+          <h3>Статус ядра</h3>
+          <div class="cc-metric">OK</div>
+          <p>Settings и flags доступны.</p>
+        </article>
+      </div>
+
+      <div class="toolbar cc-toolbar">
+        <button type="button" data-action="refresh"><i class="fas fa-rotate"></i> Обновить список команд</button>
+        <button type="button" data-action="open-turn"><i class="fas fa-lock-open"></i> Открыть ход</button>
+        <button type="button" data-action="close-turn"><i class="fas fa-lock"></i> Закрыть ход</button>
+        <button type="button" data-action="next-turn"><i class="fas fa-forward-step"></i> Следующий ход</button>
+      </div>
+    </section>
+
+    <section class="tab" data-group="primary" data-tab="teams">
+      <div class="cc-card">
+        <h3>Создать команду</h3>
+        <form data-form="create-team" class="cc-form cc-create-team-form">
+          <div class="form-group">
+            <label>Название команды</label>
+            <input type="text" name="teamName" placeholder="Например: Северный Альянс" />
+          </div>
+
+          <div class="form-group">
+            <label>Стартовый баланс</label>
+            <input type="number" name="currentBalance" value="400000" step="1" />
+          </div>
+
+          <div class="form-group cc-user-picker">
+            <label>Игроки команды</label>
+            <div class="cc-checkbox-list">
+              {{#each users}}
+                {{#unless isGM}}
+                <label class="cc-checkbox-row">
+                  <input type="checkbox" name="userIds" value="{{id}}" />
+                  <span>{{name}}</span>
+                </label>
+                {{/unless}}
+              {{/each}}
+            </div>
+          </div>
+
+          <button type="button" data-action="create-team"><i class="fas fa-plus"></i> Создать команду</button>
+        </form>
+      </div>
+
+      <div class="cc-card">
+        <h3>Список команд</h3>
+        <div class="cc-team-list">
+          {{#each teams}}
+          <article class="cc-team-card" data-team-id="{{teamId}}">
+            <header>
+              <input type="text" name="teamName" value="{{teamName}}" />
+              <span class="cc-muted">{{teamId}}</span>
+            </header>
+
+            <div class="cc-grid cc-grid-4">
+              <div class="form-group">
+                <label>Статус хода</label>
+                <select name="currentTurnStatus">
+                  {{#each ../statuses}}
+                    <option value="{{value}}" {{#if (eq value ../currentTurnStatus)}}selected{{/if}}>{{label}}</option>
+                  {{/each}}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Баланс</label>
+                <input type="number" name="currentBalance" value="{{currentBalance}}" step="1" />
+              </div>
+
+              <div class="form-group">
+                <label>Очки доступны</label>
+                <input type="number" name="availableInvestmentPoints" value="{{availableInvestmentPoints}}" step="1" />
+              </div>
+
+              <div class="form-group">
+                <label>Очки всего</label>
+                <input type="number" name="totalInvestmentPoints" value="{{totalInvestmentPoints}}" step="1" />
+              </div>
+            </div>
+
+            <div class="cc-grid cc-grid-2">
+              <div class="form-group cc-user-picker">
+                <label>Игроки</label>
+                <div class="cc-checkbox-list">
+                  {{#each ../users}}
+                    {{#unless isGM}}
+                    <label class="cc-checkbox-row">
+                      <input type="checkbox" name="userIds" value="{{id}}" {{#if (includes ../userIds id)}}checked{{/if}} />
+                      <span>{{name}}</span>
+                    </label>
+                    {{/unless}}
+                  {{/each}}
+                </div>
+              </div>
+
+              <div class="cc-linked-info">
+                <p><strong>Журнал компании:</strong> {{#if companyJournalUuid}}есть{{else}}нет{{/if}}</p>
+                <p><strong>Предприятий:</strong> {{enterpriseCount}}</p>
+                <p><strong>Участков:</strong> {{plotCount}}</p>
+                <p><strong>Игроки:</strong> {{usersLabel}}</p>
+              </div>
+            </div>
+
+            <footer class="cc-row-actions">
+              <button type="button" data-action="save-team"><i class="fas fa-floppy-disk"></i> Сохранить</button>
+              <button type="button" data-action="open-company"><i class="fas fa-book"></i> Открыть журнал</button>
+              <button type="button" data-action="accept-turn"><i class="fas fa-check"></i> Принять ход</button>
+              <button type="button" data-action="reject-turn"><i class="fas fa-xmark"></i> Отклонить</button>
+              <button type="button" data-action="draft-turn"><i class="fas fa-pen"></i> В черновик</button>
+              <button type="button" class="cc-danger" data-action="delete-team"><i class="fas fa-trash"></i> Удалить</button>
+            </footer>
+          </article>
+          {{/each}}
+        </div>
+      </div>
+    </section>
+
+    <section class="tab" data-group="primary" data-tab="turns">
+      <div class="cc-card">
+        <h3>Настройки хода</h3>
+        <form data-form="turn-settings" class="cc-form">
+          <div class="cc-grid cc-grid-3">
+            <div class="form-group">
+              <label>Текущий ход</label>
+              <input type="number" name="currentTurn" value="{{currentTurn}}" min="1" step="1" />
+            </div>
+
+            <div class="form-group">
+              <label>Максимум ходов</label>
+              <input type="number" name="maxTurns" value="{{maxTurns}}" min="1" step="1" />
+            </div>
+
+            <div class="form-group cc-inline-check">
+              <label>Ход открыт</label>
+              <input type="checkbox" name="isTurnOpen" {{#if isTurnOpen}}checked{{/if}} />
+            </div>
+          </div>
+
+          <div class="toolbar cc-toolbar">
+            <button type="button" data-action="save-turn-settings"><i class="fas fa-floppy-disk"></i> Сохранить настройки</button>
+            <button type="button" data-action="open-turn"><i class="fas fa-lock-open"></i> Открыть ход</button>
+            <button type="button" data-action="close-turn"><i class="fas fa-lock"></i> Закрыть ход</button>
+            <button type="button" data-action="next-turn"><i class="fas fa-forward-step"></i> Открыть следующий ход</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="tab" data-group="primary" data-tab="tools">
+      <div class="cc-card cc-placeholder">
+        <h3>Будущие инструменты администратора</h3>
+        <p>Эта вкладка зарезервирована под расширения: проверка ходов, налоги, рынок, национальные проекты, импорт/экспорт данных и служебные операции.</p>
+      </div>
+    </section>
+
+    <section class="tab" data-group="primary" data-tab="system">
+      <div class="cc-card">
+        <h3>Системная информация</h3>
+        <dl class="cc-system-list">
+          <dt>Модуль</dt><dd>championship-core</dd>
+          <dt>Статус хода</dt><dd>{{turnStatus}}</dd>
+          <dt>Хранение команд</dt><dd>game.settings: teamsIndex</dd>
+          <dt>Flags</dt><dd>flags.championshipCore</dd>
+          <dt>Публичный API</dt><dd>game.championshipCore.api</dd>
+        </dl>
+      </div>
+    </section>
+  </div>
+</section>
+{{/unless}}
