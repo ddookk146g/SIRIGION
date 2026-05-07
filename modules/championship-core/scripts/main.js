@@ -43,5 +43,16 @@ Hooks.once('init', async () => {
     default: []
   });
 
+  game.settings.register(MODULE_ID, 'adminPanelPosition', {
+    name: 'Позиция окна администратора',
+    scope: 'client',
+    config: false,
+    type: Object,
+    default: {}
+  });
+
+  Handlebars.registerHelper('eq', (a, b) => a === b);
+  Handlebars.registerHelper('includes', (array, value) => Array.isArray(array) && array.includes(value));
+
   console.log('championship-core | init completed');
 });
